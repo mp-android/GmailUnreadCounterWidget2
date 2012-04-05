@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="net.madroom.gucw2"
+    android:versionCode="1"
+    android:versionName="1.0" >
+    <uses-sdk android:minSdkVersion="10" android:maxSdkVersion="10" />
+
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="com.google.android.gm.permission.READ_CONTENT_PROVIDER" />
+
+    <application android:icon="@drawable/icon" android:label="@string/app_name" >
+        <activity android:name="net.madroom.gucw2.ColorEditActivity" android:theme="@style/Conf.ColorEditActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="net.madroom.gucw2.TranslucentActivity" android:label="@string/app_name" android:theme="@style/App.TransparentBackground" />
+        
+        <receiver android:name="net.madroom.gucw2.GmailUnreadCounterWidget" android:label="@string/widget_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/gmail_unread_counter_widget" />
+        </receiver>
+        <service android:name="net.madroom.gucw2.GmailUnreadCounterWidget$MyService" android:exported="false">
+            <intent-filter>
+                <action android:name="net.madroom.gucw.action.CLICK" />
+            </intent-filter>
+        </service>
+
+        <!-- act=android.intent.action.PROVIDER_CHANGED dat=content://gmail-ls/unread/^i -->
+        <receiver android:name="net.madroom.gucw2.ProviderChangedReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PROVIDER_CHANGED" />
+                <data
+                    android:scheme="content"
+                    android:host="gmail-ls"
+                    android:pathPrefix="/unread/^i"
+                    />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
