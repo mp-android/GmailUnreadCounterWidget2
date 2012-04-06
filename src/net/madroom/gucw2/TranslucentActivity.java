@@ -42,8 +42,6 @@ public class TranslucentActivity extends Activity {
         final ArrayList<Integer> numsArray = new ArrayList<Integer>();
 
         for(Account account : accounts) {
-            namesArray.add(account.name);
-
             final String numUnreadConversations = GmailContract.Labels.NUM_UNREAD_CONVERSATIONS;
             final String canonicalName = GmailContract.Labels.CANONICAL_NAME;
             String[] projection = {
@@ -59,6 +57,7 @@ public class TranslucentActivity extends Activity {
                 final int canonicalNameIndex = c.getColumnIndexOrThrow(canonicalName);
                 do {
                     if (inboxCanonicalName.equals(c.getString(canonicalNameIndex))) {
+                        namesArray.add(account.name);
                         numsArray.add(c.getInt(c.getColumnIndexOrThrow(numUnreadConversations)));
                         break;
                     }
