@@ -71,7 +71,7 @@ public class GmailUnreadCounterWidget extends AppWidgetProvider {
             mPref = PreferenceManager.getDefaultSharedPreferences(mContext);
             mComponentName = new ComponentName(mContext, GmailUnreadCounterWidget.class);
             mManager = AppWidgetManager.getInstance(mContext);
-            mRemoteViews = new RemoteViews(mContext.getPackageName(), R.layout.widget_layout_translucent);
+            mRemoteViews = new RemoteViews(mContext.getPackageName(), R.layout.widget_layout);
             mAccountManager = AccountManager.get(mContext);
         }
 
