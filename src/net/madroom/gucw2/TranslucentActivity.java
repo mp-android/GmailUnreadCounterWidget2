@@ -121,4 +121,10 @@ public class TranslucentActivity extends Activity {
         })
         .show();
     }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        startService(new Intent(this, GmailUnreadCounterWidget.MyService.class));
+    }
 }
