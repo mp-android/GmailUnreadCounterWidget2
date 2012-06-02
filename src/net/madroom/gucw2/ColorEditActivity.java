@@ -17,8 +17,6 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 public class ColorEditActivity extends Activity {
-    public static final String KEY_BG_TYPE = "key_bg_type";
-
     private static final int COLOR_MAX = 255;
     public static final int DEF_BG_COLOR_A = 128;
     public static final int DEF_BG_COLOR_R = 0;
