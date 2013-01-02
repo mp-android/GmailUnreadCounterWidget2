@@ -6,11 +6,13 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.KeyEvent;
@@ -21,7 +23,6 @@ public class TranslucentActivity extends Activity {
 
     private static final String ACCOUNT_TYPE_GOOGLE = "com.google";
     private static final String GMAIL_PACKAGE_NAME = "com.google.android.gm";
-    private static final String EXTRA_ACCOUNT = "account";
     private static final String COLOR_NUM_ZERO = "\"#777777\"";
     private static final String COLOR_NAME_ZERO = "\"#777777\"";
     private static final String COLOR_NUM_NOT_ZERO = "\"#ff0000\"";
@@ -87,10 +88,9 @@ public class TranslucentActivity extends Activity {
         final CharSequence[] names =(CharSequence[])namesArray.toArray(new CharSequence[0]);
 
         if(names.length==1) {
-            Intent i = new Intent();
-            i.setPackage(GMAIL_PACKAGE_NAME);
-            i.setAction(Intent.ACTION_MAIN);
-            i.putExtra(EXTRA_ACCOUNT, names[0]);
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setComponent(new ComponentName(GMAIL_PACKAGE_NAME, GMAIL_PACKAGE_NAME+".ConversationListActivityGmail"));
+            i.setData(Uri.parse("content://gmail-ls/account/"+names[0]+"/label/^i"));
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             startActivity(i);
@@ -101,10 +101,9 @@ public class TranslucentActivity extends Activity {
         new Builder(mContext).setTitle(R.string.select)
         .setItems(items, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                Intent i = new Intent();
-                i.setPackage(GMAIL_PACKAGE_NAME);
-                i.setAction(Intent.ACTION_MAIN);
-                i.putExtra(EXTRA_ACCOUNT, names[which]);
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setComponent(new ComponentName(GMAIL_PACKAGE_NAME, GMAIL_PACKAGE_NAME+".ConversationListActivityGmail"));
+                i.setData(Uri.parse("content://gmail-ls/account/"+names[which]+"/label/^i"));
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 i.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                 startActivity(i);
