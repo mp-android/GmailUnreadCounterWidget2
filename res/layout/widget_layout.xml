@@ -3,11 +3,9 @@
     android:id="@+id/base_layout"
     style="@style/Widget.BaseLayout"
     >
-    <ImageView
-        style="@style/Widget.MailImage"
-        />
     <TextView
         android:id="@+id/count_text"
         style="@style/Widget.CountText"
+        android:textIsSelectable="false"
         />
 </LinearLayout>

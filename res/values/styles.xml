@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <drawable name="translucent_background">#44ffffff</drawable>
     <style name="App.TransparentBackground" parent="android:Theme">
         <item name="android:windowIsTranslucent">true</item>
@@ -17,20 +17,11 @@
         <item name="android:layout_height">fill_parent</item>
         <item name="android:gravity">center</item>
     </style>
-    <style name="Widget.MailImage" parent="android:Theme">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center</item>
-        <item name="android:width">40dip</item>
-        <item name="android:height">40dip</item>
-        <item name="android:src">@drawable/gmail</item>
-    </style>
     <style name="Widget.CountText" parent="android:Theme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
-        <item name="android:width">32dip</item>
-        <item name="android:height">32dip</item>
+        <item name="android:drawableTop">@drawable/gmail</item>
     </style>
     <!-- ColorEditActivity -->
     <style name="Conf.ColorEditActivity" parent="android:Theme">
