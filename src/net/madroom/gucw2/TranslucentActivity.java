@@ -43,7 +43,7 @@ public class TranslucentActivity extends Activity {
         final ArrayList<String> inboxesArray = new ArrayList<String>();
         final ArrayList<Integer> numsArray = new ArrayList<Integer>();
 
-        String[] projection = {
+        final String[] projection = {
             GmailContract.Labels.NUM_UNREAD_CONVERSATIONS, GmailContract.Labels.CANONICAL_NAME};
 
         for(Account account : accounts) {
@@ -51,9 +51,7 @@ public class TranslucentActivity extends Activity {
                 GmailContract.Labels.getLabelsUri(account.name), projection, null, null, null);
 
             if(c.moveToFirst()) {
-                // ^sq_ig_i_personal
                 final String inboxName = GmailContract.Labels.LabelCanonicalNames.CANONICAL_NAME_INBOX_CATEGORY_PRIMARY;
-                // ^i
                 final String oldInboxName = GmailContract.Labels.LabelCanonicalNames.CANONICAL_NAME_INBOX;
 
                 final String compare = c.getString(c.getColumnIndexOrThrow(GmailContract.Labels.CANONICAL_NAME));

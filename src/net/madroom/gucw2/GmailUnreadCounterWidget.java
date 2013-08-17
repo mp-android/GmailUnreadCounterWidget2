@@ -76,10 +76,10 @@ public class GmailUnreadCounterWidget extends AppWidgetProvider {
         }
 
         @Override
-        public void onStart(Intent intent, int startId) {
+        public int onStartCommand(Intent intent, int flags, int startId) {
 
             final int widgetCount = AppWidgetManager.getInstance(mContext).getAppWidgetIds(new ComponentName(mContext, GmailUnreadCounterWidget.class)).length;
-            if(widgetCount==0) return;
+            if(widgetCount == 0) return super.onStartCommand(intent, flags, startId);
 
             if(intent!=null && intent.getAction()!=null) {
                 if(intent.getAction().equals(ACTION_CLICK)) {
@@ -87,31 +87,31 @@ public class GmailUnreadCounterWidget extends AppWidgetProvider {
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     stopSelf();
-                    return;
+
+                    return super.onStartCommand(intent, flags, startId);
                 }
             }
 
             final Account[] accounts = mAccountManager.getAccountsByType(ACCOUNT_TYPE_GOOGLE);
 
+            final String[] projection = {
+                    GmailContract.Labels.NUM_UNREAD_CONVERSATIONS, GmailContract.Labels.CANONICAL_NAME};
+
             int total = 0;
             for(Account account : accounts) {
-                final String numUnreadConversations = GmailContract.Labels.NUM_UNREAD_CONVERSATIONS;
-                final String canonicalName = GmailContract.Labels.CANONICAL_NAME;
-                String[] projection = {
-                        numUnreadConversations,
-                        canonicalName
-                };
 
                 Cursor c = getContentResolver().query(
                         GmailContract.Labels.getLabelsUri(account.name),
                         projection, null, null, null);
 
                 if(c.moveToFirst()) {
-                    final String inboxCanonicalName = GmailContract.Labels.LabelCanonicalNames.CANONICAL_NAME_INBOX;
-                    final int canonicalNameIndex = c.getColumnIndexOrThrow(canonicalName);
+                    final String inboxName = GmailContract.Labels.LabelCanonicalNames.CANONICAL_NAME_INBOX_CATEGORY_PRIMARY;
+                    final String oldInboxName = GmailContract.Labels.LabelCanonicalNames.CANONICAL_NAME_INBOX;
+
+                    final String compare = c.getString(c.getColumnIndexOrThrow(GmailContract.Labels.CANONICAL_NAME));
                     do {
-                        if (inboxCanonicalName.equals(c.getString(canonicalNameIndex))) {
-                            total += c.getInt(c.getColumnIndexOrThrow(numUnreadConversations));
+                        if (inboxName.equals(compare) || oldInboxName.equals(compare)) {
+                            total += c.getInt(c.getColumnIndexOrThrow(GmailContract.Labels.NUM_UNREAD_CONVERSATIONS));
                             break;
                         }
                     } while(c.moveToNext());
@@ -152,6 +152,7 @@ public class GmailUnreadCounterWidget extends AppWidgetProvider {
 
             stopSelf();
 
+            return super.onStartCommand(intent, flags, startId);
         }
     }
 
