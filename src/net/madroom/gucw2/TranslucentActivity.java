@@ -37,29 +37,31 @@ public class TranslucentActivity extends Activity {
 
         mContext = this;
 
-        final AccountManager accountManager = AccountManager.get(mContext);
-        final Account[] accounts = accountManager.getAccountsByType(ACCOUNT_TYPE_GOOGLE);
+        final Account[] accounts = AccountManager.get(mContext).getAccountsByType(ACCOUNT_TYPE_GOOGLE);
+
         final ArrayList<String> namesArray = new ArrayList<String>();
+        final ArrayList<String> inboxesArray = new ArrayList<String>();
         final ArrayList<Integer> numsArray = new ArrayList<Integer>();
 
+        String[] projection = {
+            GmailContract.Labels.NUM_UNREAD_CONVERSATIONS, GmailContract.Labels.CANONICAL_NAME};
+
         for(Account account : accounts) {
-            final String numUnreadConversations = GmailContract.Labels.NUM_UNREAD_CONVERSATIONS;
-            final String canonicalName = GmailContract.Labels.CANONICAL_NAME;
-            String[] projection = {
-                    numUnreadConversations,
-                    canonicalName
-            };
             Cursor c = getContentResolver().query(
-                    GmailContract.Labels.getLabelsUri(account.name),
-                    projection, null, null, null);
+                GmailContract.Labels.getLabelsUri(account.name), projection, null, null, null);
 
             if(c.moveToFirst()) {
-                final String inboxCanonicalName = GmailContract.Labels.LabelCanonicalNames.CANONICAL_NAME_INBOX;
-                final int canonicalNameIndex = c.getColumnIndexOrThrow(canonicalName);
+                // ^sq_ig_i_personal
+                final String inboxName = GmailContract.Labels.LabelCanonicalNames.CANONICAL_NAME_INBOX_CATEGORY_PRIMARY;
+                // ^i
+                final String oldInboxName = GmailContract.Labels.LabelCanonicalNames.CANONICAL_NAME_INBOX;
+
+                final String compare = c.getString(c.getColumnIndexOrThrow(GmailContract.Labels.CANONICAL_NAME));
                 do {
-                    if (inboxCanonicalName.equals(c.getString(canonicalNameIndex))) {
+                    if (inboxName.equals(compare) || oldInboxName.equals(compare)) {
                         namesArray.add(account.name);
-                        numsArray.add(c.getInt(c.getColumnIndexOrThrow(numUnreadConversations)));
+                        inboxesArray.add(compare);
+                        numsArray.add(c.getInt(c.getColumnIndexOrThrow(GmailContract.Labels.NUM_UNREAD_CONVERSATIONS)));
                         break;
                     }
                 } while(c.moveToNext());
@@ -69,28 +71,26 @@ public class TranslucentActivity extends Activity {
 
         final CharSequence[] items = new CharSequence[namesArray.size()];
         for(int i=0; i<namesArray.size(); i++) {
-            int num = numsArray.get(i);
-            String colorNum;
-            String colorName;
-            if(num==0) {
-                colorNum = COLOR_NUM_ZERO;
-                colorName = COLOR_NAME_ZERO;
-            } else {
-                colorNum = COLOR_NUM_NOT_ZERO;
-                colorName = COLOR_NAME_NOT_ZERO;
-            }
-            String html =
-                "<font color=" + colorNum + ">" + numsArray.get(i) + "</font><br />" +
-                "<font color=" + colorName + ">" +  namesArray.get(i) + "</font>";
+            final int num = numsArray.get(i);
+            final String name = namesArray.get(i);
+
+            final String colorNum = num == 0 ? COLOR_NUM_ZERO : COLOR_NUM_NOT_ZERO;
+            final String colorName = num == 0 ? COLOR_NAME_ZERO : COLOR_NAME_NOT_ZERO;
+
+            final String html =
+                "<font color=" + colorNum + ">" + num + "</font><br />" +
+                "<font color=" + colorName + ">" +  name + "</font>";
+
             items[i] = Html.fromHtml(html);
         }
 
         final CharSequence[] names =(CharSequence[])namesArray.toArray(new CharSequence[0]);
+        final CharSequence[] inboxes =(CharSequence[])inboxesArray.toArray(new CharSequence[0]);
 
         if(names.length==1) {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setComponent(new ComponentName(GMAIL_PACKAGE_NAME, GMAIL_PACKAGE_NAME+".ConversationListActivityGmail"));
-            i.setData(Uri.parse("content://gmail-ls/account/"+names[0]+"/label/^i"));
+            i.setData(Uri.parse("content://gmail-ls/account/"+names[0]+"/label/"+inboxes[0]));
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             startActivity(i);
@@ -103,7 +103,7 @@ public class TranslucentActivity extends Activity {
             public void onClick(DialogInterface dialog, int which) {
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setComponent(new ComponentName(GMAIL_PACKAGE_NAME, GMAIL_PACKAGE_NAME+".ConversationListActivityGmail"));
-                i.setData(Uri.parse("content://gmail-ls/account/"+names[which]+"/label/^i"));
+                i.setData(Uri.parse("content://gmail-ls/account/"+names[which]+"/label/"+inboxes[which]));
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 i.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                 startActivity(i);
